@@ -60,6 +60,30 @@ jobs:
       - run: echo "${{steps.get-id.outputs.repo}}"
       - run: echo "${{steps.get-id.outputs.image}}"
 
+
+
+
+          #
+
+      - name: set Docker cache-from, cache-to TO registry
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          echo "CACHE_FROM=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache" >>${GITHUB_ENV}
+          echo "CACHE_TO=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max" >>${GITHUB_ENV}
+        #run: |
+        #  echo "CACHE_FROM=cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache" >>${GITHUB_ENV}
+        #  echo "CACHE_TO=cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
+      - name: set Docker cache-from, cache-to TO GHA
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "CACHE_FROM=type=gha" >>${GITHUB_ENV}
+          echo "CACHE_TO=type=gha,mode=max" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
       - name: set lower case owner name
         run: |
           echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
@@ -116,8 +140,10 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max
+          cache-from: ${{ env.CACHE_FROM }}
+          cache-to: ${{ env.CACHE_TO }}
+          #cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache
+          #cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -131,8 +157,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max
+          cache-from: ${{ env.CACHE_FROM }}
+          cache-to: ${{ env.CACHE_TO }}
+          #cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache
+          #cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
