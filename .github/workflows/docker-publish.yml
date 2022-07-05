@@ -66,7 +66,8 @@ jobs:
           echo "CACHE_FROM=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache" >>${GITHUB_ENV}
           echo "CACHE_TO=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max" >>${GITHUB_ENV}
           echo "CACHE_FROM_AMD64=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache-amd64" >>${GITHUB_ENV}
-          echo "CACHE_TO_AMD64=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache-amd64,mode=max" >>${GITHUB_ENV}
+          echo "CACHE_TO_AMD64=type=local,mode=max" >>${GITHUB_ENV}
+          # echo "CACHE_TO_AMD64=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache-amd64,mode=max" >>${GITHUB_ENV}
         #run: |
         #  echo "CACHE_FROM=cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache" >>${GITHUB_ENV}
         #  echo "CACHE_TO=cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max" >>${GITHUB_ENV}
@@ -131,7 +132,7 @@ jobs:
       # https://github.com/docker/build-push-action
       - name: Build amd64 Docker image 
         id: build-and-push-amd64
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v3.0.0
         with:
           context: .
           platforms: "linux/amd64"
@@ -148,7 +149,7 @@ jobs:
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build-and-push
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v3.0.0
         with:
           context: .
           platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x"
