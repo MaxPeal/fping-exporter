@@ -19,7 +19,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
+  ### IMAGE_NAME: ${{ github.repository }}
 
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
             core.setOutput('owner', owner)
             const repo = context.repo.repo.toLowerCase();
             core.setOutput('repo', repo)
-            const image = context.repo.repo.split('docker-')[1]
+            const image = context.repo.repo.split('-')[1]
             core.setOutput('image', image)
       - run: echo "${{steps.get-id.outputs.id}}"
       - run: echo "${{steps.get-id.outputs.owner}}"
@@ -89,8 +89,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
+          images: ${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}
+          #images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: echo fromJSON
         run: |
           echo JSON=${{ fromJSON(steps.meta.outputs.json) }}
@@ -110,8 +110,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
@@ -124,4 +124,4 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: cosign sign ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
+        run: cosign sign ${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}@${{ steps.build-and-push.outputs.digest }}
