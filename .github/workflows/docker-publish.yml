@@ -70,7 +70,7 @@ jobs:
 
       - name: echo fromJSON
         run: |
-          echo ${{ fromJSON(steps.meta.outputs.json) }}
+          echo JSON=${{ fromJSON(steps.meta.outputs.json) }}
           echo BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
           echo VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           echo REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
