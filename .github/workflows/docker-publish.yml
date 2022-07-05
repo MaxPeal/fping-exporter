@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v2
 
       - id: get-id
-        uses: actions/github-script@6.1.0
+        uses: actions/github-script@v6.1.0
         with:
           script: |
             const id = context.payload.client_payload.value.split('-')[1]
