@@ -60,16 +60,13 @@ jobs:
       - run: echo "${{steps.get-id.outputs.repo}}"
       - run: echo "${{steps.get-id.outputs.image}}"
 
-
-
-
-          #
-
       - name: set Docker cache-from, cache-to TO registry
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           echo "CACHE_FROM=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache" >>${GITHUB_ENV}
           echo "CACHE_TO=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max" >>${GITHUB_ENV}
+          echo "CACHE_FROM_AMD64=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache-amd64" >>${GITHUB_ENV}
+          echo "CACHE_TO_AMD64=type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache-amd64,mode=max" >>${GITHUB_ENV}
         #run: |
         #  echo "CACHE_FROM=cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache" >>${GITHUB_ENV}
         #  echo "CACHE_TO=cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max" >>${GITHUB_ENV}
@@ -81,6 +78,8 @@ jobs:
         run: |
           echo "CACHE_FROM=type=gha" >>${GITHUB_ENV}
           echo "CACHE_TO=type=gha,mode=max" >>${GITHUB_ENV}
+          echo "CACHE_FROM_AMD64=type=gha" >>${GITHUB_ENV}
+          echo "CACHE_TO_AMD64=type=gha,mode=max" >>${GITHUB_ENV}
         env:
           OWNER: '${{ github.repository_owner }}'
 
@@ -140,8 +139,8 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: ${{ env.CACHE_FROM }}
-          cache-to: ${{ env.CACHE_TO }}
+          cache-from: ${{ env.CACHE_FROM_AMD64 }}
+          cache-to: ${{ env.CACHE_TO_AMD64 }}
           #cache-from: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache
           #cache-to: type=registry,ref=${{ env.REGISTRY }}/${{steps.get-id.outputs.owner}}/${{steps.get-id.outputs.repo}}:buildcache,mode=max
 
