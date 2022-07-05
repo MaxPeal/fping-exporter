@@ -40,12 +40,12 @@ jobs:
       - id: get-id
         uses: actions/github-script@v6.1.0
         with:
-          script: |
 #            const id = context.payload.client_payload.value.split('-')[1]
 #            core.setOutput('id', id)
-            const owner = context.repo.owner.value.toLowerCase();
+          script: |
+            const owner = context.repo.owner.value.toLowerCase()
             core.setOutput('owner', owner)
-            const repo = context.repo.repo.value.toLowerCase();
+            const repo = context.repo.repo.value.toLowerCase()
             core.setOutput('repo', repo)
       - run: echo "${{steps.get-id.outputs.id}}"
       - run: echo "${{steps.get-id.outputs.owner}}"
