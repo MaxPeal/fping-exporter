@@ -70,8 +70,8 @@ RUN \
 	if [ -n TARGETVARIANT ] && [ "$TARGETARCH" = "arm" ]; then \
 		export GOARM="${TARGETVARIANT//v}"; \
 	fi; \
-    cd /src && go build -v -ldflags="-extldflags=-static -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}"
-
+    cd /src && go build -v -ldflags="-extldflags=-static -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} \
+    			-X main.buildCommit=`git rev-parse --short HEAD` -X main.buildDate=`date +%Y-%m-%d` -X main.buildVersion=$(VERSION)"
 
 FROM alpine:latest
 RUN apk add --update --no-cache ca-certificates fping
