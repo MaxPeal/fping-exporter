@@ -37,6 +37,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - id: get-id
+        uses: actions/github-script@6.1.0
+        with:
+          script: |
+            const id = context.payload.client_payload.value.split('-')[1]
+            core.setOutput('id', id)
+            const owner = context.repo.owner.value.toLowerCase();
+            core.setOutput('owner', owner)
+            const repo = context.repo.repo.value.toLowerCase();
+            core.setOutput('repo', repo)
+      - run: echo "${{steps.get-id.outputs.id}}"
+      - run: echo "${{steps.get-id.outputs.owner}}"
+      - run: echo "${{steps.get-id.outputs.repo}}"
+
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
