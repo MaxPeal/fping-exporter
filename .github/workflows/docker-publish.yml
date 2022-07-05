@@ -45,11 +45,14 @@ jobs:
           script: |
             const owner = context.repo.owner.toLowerCase();
             core.setOutput('owner', owner)
-            const repo = context.repo.repo.toLowerCase()
+            const repo = context.repo.repo.toLowerCase();
             core.setOutput('repo', repo)
+            const image = context.repo.repo.split('docker-')[1]
+            core.setOutput('image', image)
       - run: echo "${{steps.get-id.outputs.id}}"
       - run: echo "${{steps.get-id.outputs.owner}}"
       - run: echo "${{steps.get-id.outputs.repo}}"
+      - run: echo "${{steps.get-id.outputs.image}}"
 
       - name: set lower case owner name
         run: |
